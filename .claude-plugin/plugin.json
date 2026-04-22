@@ -1,0 +1,16 @@
+{
+  "name": "mindframe",
+  "description": "LLM-in-the-loop infra dashboard framework. Describe what you watch; Claude inspects your stack, writes source packs against real API responses, and serves a live status page.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Thatcher",
+    "url": "https://github.com/ThatcherT"
+  },
+  "keywords": [
+    "dashboard",
+    "infra",
+    "monitoring",
+    "observability",
+    "claude"
+  ]
+}

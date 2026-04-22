@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mindframe"
+version = "0.1.0"
+description = "LLM-in-the-loop infra dashboard framework. Packs probe live status; Claude writes the packs."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "Thatcher"}]
+license = {text = "MIT"}
+keywords = ["dashboard", "infra", "monitoring", "observability", "claude"]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.27",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.23"]
+
+[tool.setuptools.packages.find]
+include = ["mindframe*"]
+exclude = ["tests*", "examples*", "docs*"]

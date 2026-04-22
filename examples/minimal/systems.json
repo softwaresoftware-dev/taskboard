@@ -1,0 +1,40 @@
+{
+  "systems": {
+    "public-web": {
+      "description": "A couple of public sites used as a smoke test",
+      "components": {
+        "example-com": {
+          "kind": "http",
+          "ref":  "https://example.com",
+          "thresholds": {
+            "status_code": {"crit_if_not_in": [200]},
+            "latency_ms":  {"warn_gt": 500, "crit_gt": 2000},
+            "reachable":   {"crit_if": false}
+          }
+        },
+        "httpbin-status": {
+          "kind": "http",
+          "ref":  "https://httpbin.org/status/200",
+          "thresholds": {
+            "status_code": {"crit_if_not_in": [200]}
+          }
+        }
+      }
+    },
+    "local-host": {
+      "description": "Smoke test of local primitives",
+      "components": {
+        "dns": {
+          "kind": "tcp",
+          "ref":  "1.1.1.1:53",
+          "thresholds": {"reachable": {"crit_if": false}}
+        },
+        "hostname": {
+          "kind": "cmd",
+          "ref":  "hostname",
+          "thresholds": {"ok": {"crit_if": false}}
+        }
+      }
+    }
+  }
+}
