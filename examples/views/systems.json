@@ -1,0 +1,41 @@
+{
+  "systems": {
+    "stat-tile": {
+      "description": "single metric stat tile",
+      "components": {
+        "sessions": {"kind": "demo/stat", "ref": "—"}
+      }
+    },
+    "rich-table": {
+      "description": "table view with badges, tags, progress bars, timestamps, and row actions",
+      "components": {
+        "agents": {"kind": "demo/table", "ref": "—"}
+      }
+    },
+    "chart-view": {
+      "description": "timeseries bar chart of daily activity",
+      "components": {
+        "daily-messages": {"kind": "demo/chart", "ref": "—"}
+      }
+    },
+    "feed-view": {
+      "description": "sequential event feed",
+      "components": {
+        "activity": {"kind": "demo/feed", "ref": "—"}
+      }
+    },
+    "health-classic": {
+      "description": "pure status component (no view) — falls back to facts row",
+      "components": {
+        "ping": {
+          "kind": "demo/health",
+          "ref": "—",
+          "thresholds": {
+            "status_code": {"crit_if_not_in": [200]},
+            "latency_ms":  {"warn_gt": 500, "crit_gt": 2000}
+          }
+        }
+      }
+    }
+  }
+}

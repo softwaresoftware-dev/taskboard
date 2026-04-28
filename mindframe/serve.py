@@ -43,6 +43,7 @@ systems.json shape:
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import json
 import logging
 from contextlib import asynccontextmanager
@@ -55,6 +56,7 @@ from fastapi.responses import HTMLResponse, JSONResponse
 
 from .contract import Context, Status
 from .probes import BUILTIN_PACKS
+from .render import render_html
 from .thresholds import derive_state
 
 logger = logging.getLogger("mindframe")
@@ -125,7 +127,7 @@ def serve(
 
     @app.get("/", response_class=HTMLResponse)
     async def index() -> str:
-        return _render_html(title, _snapshot(state))
+        return render_html(title, _snapshot(state))
 
     app.state.mindframe = state
     return app
@@ -204,6 +206,9 @@ def _probe_one(state: _State, component_cfg: dict[str, Any]) -> dict[str, Any]:
         return _error_result(f"{type(exc).__name__}: {exc}")
 
     state_label = derive_state(status, component_cfg.get("thresholds"))
+    view_payload: dict[str, Any] | None = None
+    if status.view is not None:
+        view_payload = dataclasses.asdict(status.view) if dataclasses.is_dataclass(status.view) else status.view
     return {
         "state":      state_label,
         "facts":      status.facts,
@@ -212,6 +217,7 @@ def _probe_one(state: _State, component_cfg: dict[str, Any]) -> dict[str, Any]:
         "checked_at": status.checked_at.isoformat() if status.checked_at else None,
         "kind":       kind,
         "ref":        ref,
+        "view":       view_payload,
     }
 
 
@@ -268,73 +274,6 @@ def _worst_state(components: Any) -> str:
         if order.get(s, 0) > order.get(worst, 0):
             worst = s
     return worst if any_seen else "unknown"
-
-
-def _render_html(title: str, snap: dict[str, Any]) -> str:
-    systems = snap.get("systems", {})
-    rows = []
-    for name, sys_ in systems.items():
-        comp_rows = []
-        for cname, comp in sys_.get("components", {}).items():
-            badge = _badge(comp.get("state", "unknown"))
-            error = comp.get("error")
-            facts = comp.get("facts") or {}
-            fact_snips = ", ".join(f"{k}={v}" for k, v in list(facts.items())[:4])
-            extra = f" <span class='err'>{_escape(error)}</span>" if error else ""
-            comp_rows.append(
-                f"<tr><td>{_escape(cname)}</td><td>{badge}</td>"
-                f"<td class='kind'>{_escape(comp.get('kind') or '')}</td>"
-                f"<td class='facts'>{_escape(fact_snips)}{extra}</td></tr>"
-            )
-        rows.append(f"""
-          <section class="system">
-            <header>
-              <h2>{_escape(name)} {_badge(sys_.get('state', 'unknown'))}</h2>
-              <p>{_escape(sys_.get('description') or '')}</p>
-            </header>
-            <table>{''.join(comp_rows)}</table>
-          </section>
-        """)
-    body = "".join(rows) if rows else "<p>No systems configured.</p>"
-    return f"""<!doctype html>
-<html><head><meta charset="utf-8"><title>{_escape(title)}</title>
-<style>
- body {{ font-family: -apple-system, system-ui, sans-serif; margin: 2rem; background:#0b0d10; color:#e6e6e6; }}
- h1 {{ font-weight: 500; }}
- section.system {{ margin-bottom: 2rem; background:#14181d; padding:1rem 1.25rem; border-radius:6px; }}
- section.system header h2 {{ margin: 0; font-size: 1.2rem; }}
- section.system header p {{ margin: .25rem 0 .75rem; color:#9aa4af; font-size:.9rem; }}
- table {{ width: 100%; border-collapse: collapse; }}
- td {{ padding: .35rem .5rem; border-top: 1px solid #22272d; font-size: .9rem; vertical-align: top; }}
- .kind {{ color:#9aa4af; font-family: JetBrains Mono, Menlo, monospace; font-size:.8rem; }}
- .facts {{ color:#c5cdd5; font-family: JetBrains Mono, Menlo, monospace; font-size:.8rem; }}
- .badge {{ display:inline-block; padding: 1px 8px; border-radius:999px; font-size:.7rem; margin-left:.5rem; text-transform:uppercase; letter-spacing:.04em; }}
- .badge.healthy {{ background:#124a2b; color:#6bd99b; }}
- .badge.warn    {{ background:#5b4412; color:#f6c14b; }}
- .badge.crit    {{ background:#631d1d; color:#f19a9a; }}
- .badge.error   {{ background:#3a2b63; color:#c5b3ff; }}
- .badge.unknown {{ background:#2a2f35; color:#9aa4af; }}
- .err {{ color:#f19a9a; }}
-</style></head>
-<body>
-<h1>{_escape(title)}</h1>
-<p style="color:#9aa4af; font-size:.85rem">snapshot: {_escape(snap.get('snapshot_at') or '')}</p>
-{body}
-</body></html>"""
-
-
-def _badge(state: str) -> str:
-    cls = state if state in ("healthy", "warn", "crit", "error", "unknown") else "unknown"
-    return f"<span class='badge {cls}'>{cls}</span>"
-
-
-def _escape(s: Any) -> str:
-    if s is None:
-        return ""
-    return (
-        str(s).replace("&", "&amp;").replace("<", "&lt;")
-              .replace(">", "&gt;").replace('"', "&quot;")
-    )
 
 
 __all__ = ["serve", "Status", "Context"]

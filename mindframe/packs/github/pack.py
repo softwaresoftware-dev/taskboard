@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from mindframe.contract import Context, Status
+from mindframe.contract import Column, Context, Status, Table
 
 
 KINDS = ["gh/repo", "gh/pull-requests", "gh/releases"]
@@ -87,6 +87,23 @@ def _parse_prs(data: list, checked: datetime) -> Status:
     if data:
         oldest = min(_parse_ts(pr["created_at"]) for pr in data)
         oldest_age_days = (checked - oldest).days
+    table = Table(
+        columns=[
+            Column(key="number",  label="#",       cell_kind="code"),
+            Column(key="title",   label="Title",   cell_kind="link"),
+            Column(key="author",  label="Author",  cell_kind="text"),
+            Column(key="age",     label="Age",     cell_kind="timestamp"),
+        ],
+        rows=[
+            {
+                "number": f"#{pr['number']}",
+                "title":  {"href": pr["html_url"], "text": pr["title"]},
+                "author": (pr.get("user") or {}).get("login") or "—",
+                "age":    pr["created_at"],
+            }
+            for pr in data
+        ],
+    )
     return Status(
         facts={
             "count":           len(data),
@@ -99,6 +116,7 @@ def _parse_prs(data: list, checked: datetime) -> Status:
             ],
         },
         checked_at=checked,
+        view=table,
     )
 
 
