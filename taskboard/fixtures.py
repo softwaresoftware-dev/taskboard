@@ -6,7 +6,7 @@ produces well-formed Status, the pack matches reality.
 
 Usage during pack development:
 
-    from mindframe.fixtures import capture
+    from taskboard.fixtures import capture
 
     response = run_live_api_call(...)
     capture("repo-public", response, pack_dir=Path(__file__).parent,

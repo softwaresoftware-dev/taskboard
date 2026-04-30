@@ -1,16 +1,16 @@
 """Validate the github pack against its fixtures.
 
-This is the mindframe contract test: a pack is valid iff probe() produces
+This is the taskboard contract test: a pack is valid iff probe() produces
 well-formed Status for every fixture.
 """
 from pathlib import Path
 
 import pytest
 
-from mindframe.contract import Context, Status
-from mindframe.packs.github import pack
+from taskboard.contract import Context, Status
+from taskboard.packs.github import pack
 
-FIXTURES = Path(__file__).parent.parent / "mindframe" / "packs" / "github" / "fixtures"
+FIXTURES = Path(__file__).parent.parent / "taskboard" / "packs" / "github" / "fixtures"
 
 
 def _ctx():

@@ -1,4 +1,4 @@
-"""Smallest possible mindframe dashboard.
+"""Smallest possible taskboard dashboard.
 
 Run:
 
@@ -8,12 +8,12 @@ Then open http://localhost:8080/
 """
 from pathlib import Path
 
-from mindframe import serve
+from taskboard import serve
 
 HERE = Path(__file__).parent
 
 app = serve(
     systems_path=HERE / "systems.json",
     poll_interval=15,
-    title="Mindframe — Minimal Example",
+    title="Taskboard — Minimal Example",
 )

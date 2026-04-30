@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
-from mindframe.contract import (
+from taskboard.contract import (
     Action,
     Chart,
     Column,
@@ -17,8 +17,8 @@ from mindframe.contract import (
     Status,
     Table,
 )
-from mindframe.render import render_html
-from mindframe.serve import serve
+from taskboard.render import render_html
+from taskboard.serve import serve
 
 
 class _ViewPack:

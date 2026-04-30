@@ -2,8 +2,8 @@
 
 Usage in a user's dashboard repo:
 
-    from mindframe import serve
-    from mindframe.packs.github import pack as gh_pack
+    from taskboard import serve
+    from taskboard.packs.github import pack as gh_pack
 
     app = serve(
         systems_path="systems.json",
@@ -59,7 +59,7 @@ from .probes import BUILTIN_PACKS
 from .render import render_html
 from .thresholds import derive_state
 
-logger = logging.getLogger("mindframe")
+logger = logging.getLogger("taskboard")
 
 DEFAULT_POLL_INTERVAL = 30
 
@@ -70,7 +70,7 @@ def serve(
     poll_interval: int = DEFAULT_POLL_INTERVAL,
     fixtures_dir: str | Path | None = None,
     include_builtins: bool = True,
-    title: str = "Mindframe",
+    title: str = "Taskboard",
 ) -> FastAPI:
     """Build a FastAPI app that polls all components and serves their state.
 
@@ -129,7 +129,7 @@ def serve(
     async def index() -> str:
         return render_html(title, _snapshot(state))
 
-    app.state.mindframe = state
+    app.state.taskboard = state
     return app
 
 

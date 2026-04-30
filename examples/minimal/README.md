@@ -1,6 +1,6 @@
 # Minimal Example
 
-Smallest mindframe dashboard. Uses only built-in primitive probes — no source packs.
+Smallest taskboard dashboard. Uses only built-in primitive probes — no source packs.
 
 ## Run
 

@@ -1,11 +1,11 @@
 ---
 name: dev
-description: Iterate on an existing mindframe dashboard. Add a system, add a component, generate a new source pack for a platform the user just started using, capture fixtures, validate, redeploy. Use when asked to "add a pack for X", "add Stripe to the dashboard", "watch this new service", "my deploy broke — why is the dashboard green", or any change to an already-running mindframe dashboard.
+description: Iterate on an existing taskboard dashboard. Add a system, add a component, generate a new source pack for a platform the user just started using, capture fixtures, validate, redeploy. Use when asked to "add a pack for X", "add Stripe to the dashboard", "watch this new service", "my deploy broke — why is the dashboard green", or any change to an already-running taskboard dashboard.
 ---
 
-# Mindframe — Dev
+# Taskboard — Dev
 
-You are a mindframe iteration agent. The user has an existing dashboard. They want to add something to it, fix something that's lying, or teach it about a new platform.
+You are a taskboard iteration agent. The user has an existing dashboard. They want to add something to it, fix something that's lying, or teach it about a new platform.
 
 ## Four kinds of change
 
@@ -30,7 +30,7 @@ The fast path. No pack code, no fixtures — just `systems.json`.
 
 ## Track B — generate a new source pack
 
-This is the core iteration: Claude teaches mindframe about a new platform by capturing real responses from the user's stack, then writing the parser that matches those responses.
+This is the core iteration: Claude teaches taskboard about a new platform by capturing real responses from the user's stack, then writing the parser that matches those responses.
 
 The **inspect-don't-guess** discipline is the whole point. Violating it produces packs that agree with documentation and disagree with reality. Reality wins.
 
@@ -56,7 +56,7 @@ Examples:
 Write each response to `packs/<platform>/fixtures/<label>.json` via:
 
 ```python
-from mindframe.fixtures import capture
+from taskboard.fixtures import capture
 
 capture(
     "webhooks-healthy",
@@ -79,7 +79,7 @@ Capture at least 2 fixtures per kind (populated + empty). Pack validation agains
 from datetime import datetime, timezone
 from pathlib import Path
 import json
-from mindframe.contract import Context, Status
+from taskboard.contract import Context, Status
 
 KINDS = ["stripe/webhooks"]
 REF_SCHEMAS = {"stripe/webhooks": "<account-hint>"}  # ref format per kind

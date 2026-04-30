@@ -12,8 +12,8 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from mindframe.contract import Context, Status
-from mindframe.serve import serve
+from taskboard.contract import Context, Status
+from taskboard.serve import serve
 
 
 class _FakePack:
@@ -141,6 +141,6 @@ def test_builtins_registered_by_default(tmp_path: Path):
     sys_path = tmp_path / "systems.json"
     sys_path.write_text(json.dumps({"systems": {}}))
     app = serve(systems_path=sys_path, packs={}, poll_interval=3600)
-    state = app.state.mindframe
+    state = app.state.taskboard
     for name in ("http", "tcp", "cmd", "file"):
         assert name in state.packs

@@ -1,4 +1,4 @@
-"""HTML rendering for mindframe snapshots.
+"""HTML rendering for taskboard snapshots.
 
 A component snapshot may carry a `view` payload (one of: stat, table, chart,
 feed). When present, the framework renders the rich view. When absent, falls

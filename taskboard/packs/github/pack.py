@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from mindframe.contract import Column, Context, Status, Table
+from taskboard.contract import Column, Context, Status, Table
 
 
 KINDS = ["gh/repo", "gh/pull-requests", "gh/releases"]

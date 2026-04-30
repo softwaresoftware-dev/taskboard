@@ -1,4 +1,4 @@
-from mindframe.contract import (
+from taskboard.contract import (
     Action,
     Chart,
     Column,
@@ -12,9 +12,9 @@ from mindframe.contract import (
     Table,
     View,
 )
-from mindframe.probes import BUILTIN_PACKS
-from mindframe.serve import serve
-from mindframe.thresholds import derive_state
+from taskboard.probes import BUILTIN_PACKS
+from taskboard.serve import serve
+from taskboard.thresholds import derive_state
 
 __all__ = [
     "Action",

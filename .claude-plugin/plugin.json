@@ -1,5 +1,5 @@
 {
-  "name": "mindframe",
+  "name": "taskboard",
   "description": "LLM-in-the-loop infra dashboard framework. Describe what you watch; Claude inspects your stack, writes source packs against real API responses, and serves a live status page.",
   "version": "0.1.0",
   "author": {

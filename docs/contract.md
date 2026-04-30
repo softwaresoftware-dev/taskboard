@@ -1,4 +1,4 @@
-# Mindframe Contract
+# Taskboard Contract
 
 Design decisions for the Source contract, as landed in the first design session. Findings from running `gh api` live against real repos are noted inline — design was revised by contact with reality, not argued on paper.
 

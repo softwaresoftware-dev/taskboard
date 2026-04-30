@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
-from mindframe.contract import Status
-from mindframe.thresholds import derive_state
+from taskboard.contract import Status
+from taskboard.thresholds import derive_state
 
 
 def _s(facts=None, error=None):

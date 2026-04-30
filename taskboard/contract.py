@@ -1,4 +1,4 @@
-"""The Mindframe contract.
+"""The Taskboard contract.
 
 Packs implement Source. The framework calls probe() and applies thresholds
 from systems.json to derive state.

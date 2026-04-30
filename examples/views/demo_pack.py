@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
-from mindframe.contract import (
+from taskboard.contract import (
     Action,
     Chart,
     Column,
@@ -108,13 +108,13 @@ def probe(kind: str, ref: str, ctx: Context) -> Status:
                 {"ts": (now - timedelta(minutes=2)).isoformat(),
                  "title": "deploy succeeded", "body": "softwaresoftware-marketplace v0.4.2", "accent": "ok"},
                 {"ts": (now - timedelta(minutes=14)).isoformat(),
-                 "title": "PR opened",        "body": "extend mindframe contract with view types", "accent": "info"},
+                 "title": "PR opened",        "body": "extend taskboard contract with view types", "accent": "info"},
                 {"ts": (now - timedelta(hours=1)).isoformat(),
                  "title": "container restarted", "body": "gummymine-django (oom)", "accent": "warn"},
                 {"ts": (now - timedelta(hours=3)).isoformat(),
                  "title": "alert fired",       "body": "disk usage > 90% on /", "accent": "crit"},
                 {"ts": (now - timedelta(hours=6)).isoformat(),
-                 "title": "site deployed",     "body": "mindframe.softwaresoftware.dev"},
+                 "title": "site deployed",     "body": "taskboard.softwaresoftware.dev"},
             ]),
         )
     if kind == "demo/health":

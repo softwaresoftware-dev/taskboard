@@ -9,8 +9,8 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 
-from mindframe.contract import Context
-from mindframe.probes import cmd_probe, file_probe, http_probe, tcp_probe
+from taskboard.contract import Context
+from taskboard.probes import cmd_probe, file_probe, http_probe, tcp_probe
 
 
 # ---------- http ----------
