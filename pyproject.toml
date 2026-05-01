@@ -9,7 +9,6 @@ description = "LLM-in-the-loop infra dashboard framework. Packs probe live statu
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{name = "Thatcher"}]
-license = {text = "MIT"}
 keywords = ["dashboard", "infra", "monitoring", "observability", "claude"]
 dependencies = [
     "fastapi>=0.110",
