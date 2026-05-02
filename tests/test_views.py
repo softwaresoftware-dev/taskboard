@@ -131,8 +131,8 @@ def test_renderer_falls_back_for_status_without_view():
     body = html.split("</style>", 1)[1]
     assert "latency_ms" in body
     assert "<div class='facts'>" in body
-    assert "stat-card" not in body
-    assert "view-table" not in body
+    assert "class='stat-card" not in body
+    assert "<table class='view-table'" not in body
 
 
 def test_renderer_handles_table_with_filters_and_progress(tmp_path: Path):

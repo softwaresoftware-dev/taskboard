@@ -103,6 +103,12 @@ def serve(
 
     app = FastAPI(title=title, version="0.1.0", lifespan=lifespan)
 
+    # vendored static assets (uPlot)
+    from fastapi.staticfiles import StaticFiles
+    static_dir = Path(__file__).parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
     @app.get("/healthz")
     async def healthz() -> dict[str, Any]:
         return {"ok": True, "systems": len(state.config.get("systems", {}))}
@@ -124,6 +130,40 @@ def serve(
             raise HTTPException(404, f"unknown system: {name}")
         await _probe_system(state, name, state.config["systems"][name])
         return JSONResponse(_system_snapshot(state, name))
+
+    @app.post("/api/systems/{system}/components/{component}/actions/{action}")
+    async def api_action(system: str, component: str, action: str, row_id: str | None = None) -> JSONResponse:
+        sys_cfg = state.config.get("systems", {}).get(system)
+        if not sys_cfg:
+            raise HTTPException(404, f"unknown system: {system}")
+        comp_cfg = (sys_cfg.get("components") or {}).get(component)
+        if not comp_cfg:
+            raise HTTPException(404, f"unknown component: {system}/{component}")
+        kind = comp_cfg.get("kind", "")
+        ref = comp_cfg.get("ref", "")
+        ns = kind.split("/", 1)[0] if "/" in kind else kind
+        pack = state.packs.get(ns)
+        act_fn = getattr(pack, "act", None) if pack else None
+        if not callable(act_fn):
+            return JSONResponse(
+                {"ok": False, "action": action, "message": f"pack {ns!r} does not implement act()"},
+                status_code=501,
+            )
+        ctx = Context(config=comp_cfg.get("config") or {}, fixtures_dir=state.fixtures_dir)
+        # Try act() with row_id, fall back to act() without if the pack doesn't accept it.
+        try:
+            try:
+                result = act_fn(kind=kind, ref=ref, action=action, ctx=ctx, row_id=row_id)
+            except TypeError:
+                result = act_fn(kind=kind, ref=ref, action=action, ctx=ctx)
+        except Exception as e:
+            logger.exception("act failed for %s/%s/%s row_id=%s", system, component, action, row_id)
+            return JSONResponse({"ok": False, "action": action, "message": str(e)}, status_code=500)
+        if not isinstance(result, dict):
+            result = {"ok": True, "result": result}
+        result.setdefault("ok", True)
+        result.setdefault("action", action)
+        return JSONResponse(result)
 
     @app.get("/", response_class=HTMLResponse)
     async def index() -> str:
