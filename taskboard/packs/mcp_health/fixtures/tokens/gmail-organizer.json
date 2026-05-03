@@ -1,0 +1,6 @@
+{
+  "access_token": "ya29.fake-access-token-no-refresh",
+  "scope": "https://www.googleapis.com/auth/gmail.modify",
+  "token_type": "Bearer",
+  "expiry_date": 1700000000000
+}

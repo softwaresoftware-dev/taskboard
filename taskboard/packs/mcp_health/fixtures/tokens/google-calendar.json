@@ -1,0 +1,7 @@
+{
+  "access_token": "ya29.fake-access-token",
+  "refresh_token": "1//fake-refresh-token",
+  "scope": "https://www.googleapis.com/auth/calendar",
+  "token_type": "Bearer",
+  "expiry_date": 99999999999999
+}

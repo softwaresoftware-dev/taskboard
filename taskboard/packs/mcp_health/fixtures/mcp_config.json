@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "google-calendar": {
+      "command": "node",
+      "args": ["/home/example/projects/google-calendar-mcp/build/index.js"]
+    },
+    "gmail-organizer": {
+      "command": "node",
+      "args": ["/home/example/projects/gmail-mcp/build/index.js"]
+    },
+    "slack": {
+      "command": "node",
+      "args": ["/home/example/projects/slack-mcp/build/index.js"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-fake-fixture-token"
+      }
+    },
+    "osrs-wiki": {
+      "command": "python",
+      "args": ["-m", "osrs_wiki_mcp"]
+    }
+  }
+}
