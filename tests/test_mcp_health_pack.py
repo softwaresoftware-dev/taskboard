@@ -72,6 +72,71 @@ def test_unknown_kind_raises():
         pack.probe("mcp/nonexistent", "default", _ctx())
 
 
+def test_expired_and_stale_token_promoted_to_broken(tmp_path):
+    """v1.5 heuristic: expired access token + token.json untouched for >=7d
+    should be promoted from 'unknown' to 'broken' on the assumption that
+    the refresh token has been revoked (or the MCP simply hasn't been
+    used — the detail message says both)."""
+    import json
+    import os
+    import time
+
+    cfg = tmp_path / "mcp_config.json"
+    cfg.write_text(json.dumps({
+        "mcpServers": {
+            "google-calendar": {
+                "command": "node",
+                "args": ["/x/google-calendar-mcp/build/index.js"],
+            }
+        }
+    }))
+    tokens = tmp_path / "tokens"
+    tokens.mkdir()
+    token_file = tokens / "google-calendar.json"
+    token_file.write_text(json.dumps({
+        "access_token": "fake",
+        "refresh_token": "fake",
+        "expiry_date": 1700000000000,  # 2023-11-14, well in the past
+    }))
+    # Push mtime back 30 days so the staleness threshold triggers.
+    thirty_days_ago = time.time() - 30 * 24 * 3600
+    os.utime(token_file, (thirty_days_ago, thirty_days_ago))
+
+    rows = _rows_by_name(pack.probe("mcp/health", "default", Context(fixtures_dir=str(tmp_path))))
+    row = rows["google-calendar"]
+    assert row["state"] == "broken"
+    assert "refresh likely revoked" in row["detail"]
+
+
+def test_expired_but_recently_touched_stays_unknown(tmp_path):
+    """If expiry has passed but mtime is fresh, keep 'unknown' — refresh
+    may have just succeeded and the next read could equally well succeed
+    or fail. Don't claim broken without evidence."""
+    import json
+    import time
+
+    cfg = tmp_path / "mcp_config.json"
+    cfg.write_text(json.dumps({
+        "mcpServers": {
+            "google-calendar": {
+                "command": "node",
+                "args": ["/x/google-calendar-mcp/build/index.js"],
+            }
+        }
+    }))
+    (tmp_path / "tokens").mkdir()
+    token_file = tmp_path / "tokens" / "google-calendar.json"
+    token_file.write_text(json.dumps({
+        "access_token": "fake",
+        "refresh_token": "fake",
+        "expiry_date": int((time.time() - 60) * 1000),  # expired 1m ago
+    }))
+    # mtime stays at "now" (just-written file)
+
+    rows = _rows_by_name(pack.probe("mcp/health", "default", Context(fixtures_dir=str(tmp_path))))
+    assert rows["google-calendar"]["state"] == "unknown"
+
+
 def test_missing_token_file_in_fixtures_marked_broken(tmp_path):
     """A google MCP whose token.json is absent should be reported broken."""
     cfg = tmp_path / "mcp_config.json"

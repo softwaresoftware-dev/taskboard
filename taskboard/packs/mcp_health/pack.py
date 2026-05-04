@@ -41,6 +41,15 @@ SCRUB = {
 
 _GOOGLE_PATTERNS = ("gmail-mcp", "google-calendar", "google-drive", "gmail-organizer")
 
+# How long an OAuth token can stay expired-and-untouched before we promote
+# from "unknown" to "broken". The token.json mtime tracks the last
+# successful refresh: googleapis writes it after a refresh round-trip
+# succeeds. If the access token is past expiry AND the file hasn't been
+# rewritten in this many days, the most likely explanation is the refresh
+# token was revoked (or the user hasn't invoked this MCP in a long time —
+# we tell them so in the detail string).
+_STALE_DAYS_FOR_BROKEN = 7
+
 
 def probe(kind: str, ref: str, ctx: Context) -> Status:
     if kind not in KINDS:
@@ -177,7 +186,20 @@ def _probe_google(name: str, cmd: str, now: datetime, ctx: Context) -> dict:
         }
 
     expiry = _parse_expiry(expiry_raw)
+    mtime = datetime.fromtimestamp(token_path.stat().st_mtime, tz=timezone.utc)
+    age_days = (now - mtime).days
+
     if now > expiry:
+        if age_days >= _STALE_DAYS_FOR_BROKEN:
+            return {
+                "family": "google_oauth", "state": "broken",
+                "detail": (
+                    f"expired {(now - expiry).days}d ago and token file untouched "
+                    f"for {age_days}d — refresh likely revoked. Re-auth required, "
+                    f"unless this MCP just hasn't been used recently."
+                ),
+                "last_seen": last_seen,
+            }
         return {
             "family": "google_oauth", "state": "unknown",
             "detail": f"access token expired {(now - expiry).days}d ago — refresh may or may not still work",
